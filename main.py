@@ -29,10 +29,10 @@ class Stack(Enum):
     HIGH_CARD = 10
 
 class Suit(Enum):
-    HEARTS = ''
-    DIAMONDS = ''
-    CLUBS = ''
-    SPADES = ''
+    HEART = '♥'
+    DIAMOND = '♦'
+    CLUB = '♣'
+    SPADE = '♠'
 
 class Phase(Enum):
     PRE_FLOP = 0
@@ -53,7 +53,7 @@ class Action(Enum):
 
 # Base Game
 class Poker:
-    def __init__(self, players. deck):
+    def __init__(self, players, deck):
         self.player = players
         self.deck = deck
         self.pot = 0
@@ -106,8 +106,8 @@ class Hand:
         pass
 
 class Deck:
-    def __init__(self, deck):
-        self.deck = deck
+    def __init__(self, cards = []):
+        self.cards = cards
 
     def shuffle():
         pass
@@ -125,5 +125,28 @@ class Card:
        self.color = color
 
     def __str__(self):
-        pass
+        suit_symbol = self.suit.value
+        rank_symbol = self.rank.name if self.rank.value >= 11 else str(self.rank.value)
+    
+        available_space = 17
+        rank_space = ' ' * ((available_space - len(rank_symbol)) // 2)
+    
+        card_lines = [
+            "+-----------------+",
+            "|                 |",
+            f"|{' '*8}{suit_symbol}{' '*8}|",
+            f"|{rank_space}{rank_symbol}{' ' if len(rank_symbol) % 2 == 0 else ''}{rank_space}|",
+            "|                 |",
+            "+-----------------+"
+        ]
+        return "\n".join(card_lines)
+# Initial Game
 
+# create cards
+cards = []
+for rank in Rank:
+    for suit in Suit:
+        for color in Color:
+            card = Card(rank=rank,suit=suit,color=color)
+            cards.append(card)
+            print(card)
