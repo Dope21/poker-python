@@ -1,4 +1,4 @@
-# Enum Class
+# Enum Class from enum import Enum
 from enum import Enum
 
 class Rank(Enum):
@@ -29,10 +29,10 @@ class Stack(Enum):
     HIGH_CARD = 10
 
 class Suit(Enum):
-    HEART = '♥'
-    DIAMOND = '♦'
-    CLUB = '♣'
-    SPADE = '♠'
+    HEART = 'H'
+    DIAMOND = 'D'
+    CLUB = 'C'
+    SPADE = 'S'
 
 class Phase(Enum):
     PRE_FLOP = 0
@@ -41,8 +41,8 @@ class Phase(Enum):
     RIVER = 3
 
 class Color(Enum):
-    BLACK = 0
-    RED = 1
+    BLACK = "⚫"
+    RED = "🔴"
 
 class Action(Enum):
     FOLD = 0
@@ -134,7 +134,7 @@ class Card:
         card_lines = [
             "+-----------------+",
             "|                 |",
-            f"|{' '*8}{suit_symbol}{' '*8}|",
+            f"|{' '*6}{suit_symbol} {self.color.value}{' '*7}|",
             f"|{rank_space}{rank_symbol}{' ' if len(rank_symbol) % 2 == 0 else ''}{rank_space}|",
             "|                 |",
             "+-----------------+"
