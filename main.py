@@ -109,14 +109,21 @@ class Deck:
     def __init__(self, cards = []):
         self.cards = cards
 
-    def shuffle():
+    def shuffle(self):
         pass
 
-    def draw():
+    def draw(self):
         pass
 
-    def is_empty():
+    def is_empty(self):
         pass
+
+    def append_card(self, card):
+        self.cards.append(card)
+    
+    def print_cards(self):
+        for card in self.cards:
+            print(card)
 
 class Card:
     def __init__(self, rank, suit, color):
@@ -143,10 +150,11 @@ class Card:
 # Initial Game
 
 # create cards
-cards = []
+deck = Deck()
 for rank in Rank:
     for suit in Suit:
         for color in Color:
             card = Card(rank=rank,suit=suit,color=color)
-            cards.append(card)
-            print(card)
+            deck.append_card(card)
+
+deck.print_cards()
