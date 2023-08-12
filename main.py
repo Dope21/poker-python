@@ -118,11 +118,17 @@ class Deck:
             self.cards[i] = temp
             temp = None
 
-    def draw(self):
-        pass
+    def draw(self, draw_number):
+        cards = []
+        for i in range(draw_number):
+            if self.is_empty():
+                print('Card is out of Deck!')
+            else:
+                cards.append(self.cards.pop())
+        return cards
 
     def is_empty(self):
-        pass
+        return len(self.cards) == 0
 
     def append_card(self, card):
         self.cards.append(card)
@@ -153,6 +159,7 @@ class Card:
             "+-----------------+"
         ]
         return "\n".join(card_lines)
+
 # Initial Game
 
 # create cards
@@ -164,4 +171,8 @@ for rank in Rank:
             deck.append_card(card)
 
 deck.shuffle()
-deck.print_cards()
+deck.shuffle()
+# deck.print_cards()
+cards = deck.draw(2)
+for c in cards:
+    print(c)
