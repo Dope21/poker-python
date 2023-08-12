@@ -1,5 +1,5 @@
-# Enum Class from enum import Enum
 from enum import Enum
+import random
 
 class Rank(Enum):
     ACE = 1
@@ -110,7 +110,13 @@ class Deck:
         self.cards = cards
 
     def shuffle(self):
-        pass
+        temp = None
+        for i in range(len(self.cards)-1, -1, -1):
+            swap_index = random.randint(0, i)
+            temp = self.cards[swap_index]
+            self.cards[swap_index] = self.cards[i]
+            self.cards[i] = temp
+            temp = None
 
     def draw(self):
         pass
@@ -157,4 +163,5 @@ for rank in Rank:
             card = Card(rank=rank,suit=suit,color=color)
             deck.append_card(card)
 
+deck.shuffle()
 deck.print_cards()
