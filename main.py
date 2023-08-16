@@ -106,7 +106,9 @@ class Hand:
         pass
 
 class Deck:
-    def __init__(self, cards = []):
+    def __init__(self, cards=None):
+        if cards is None:
+            cards = []
         self.cards = cards
 
     def shuffle(self):
@@ -166,13 +168,8 @@ class Card:
 deck = Deck()
 for rank in Rank:
     for suit in Suit:
-        for color in Color:
-            card = Card(rank=rank,suit=suit,color=color)
-            deck.append_card(card)
-
-deck.shuffle()
-deck.shuffle()
-# deck.print_cards()
-cards = deck.draw(2)
-for c in cards:
-    print(c)
+        color = Color.BLACK
+        if suit.name == 'HEART' or suit.name == 'DIAMOND':
+            color = Color.RED
+        card = Card(rank=rank, suit=suit, color=color)
+        deck.append_card(card)
