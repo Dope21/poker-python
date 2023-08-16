@@ -60,25 +60,25 @@ class Poker:
         self.current_phase = Phase.PRE_FLOP
         self.community_card = []
 
-    def generate_chips(number):
+    def generate_chips(self, number):
         pass
 
-    def deal_cards():
+    def deal_cards(self):
         pass
 
-    def betting_round():
+    def betting_round(self):
         pass
 
-    def change_phase():
+    def change_phase(self):
         pass
 
-    def determind_winner():
+    def determind_winner(self):
         pass
 
-    def payout():
+    def payout(self):
         pass
 
-    def game_over():
+    def game_over(self):
         pass
 
 class Player:
@@ -89,20 +89,20 @@ class Player:
         self.current_bet = 0
         self.has_folded = False
 
-    def make_bet(action):
+    def make_bet(self, action):
         pass
 
 class Hand:
     def __init__(self):
         self.hand = []
 
-    def evaluate_cards(commu_cards):
+    def evaluate_cards(self, commu_cards):
         pass
 
-    def add_cards(cards):
+    def add_cards(self, cards):
         pass
 
-    def clear_hand():
+    def clear_hand(self):
         pass
 
 class Deck:
