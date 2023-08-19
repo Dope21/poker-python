@@ -111,7 +111,9 @@ class Deck:
             print(card)
 
 class Hand:
-    def __init__(self, cards=[]) -> None:
+    def __init__(self, cards=None) -> None:
+        if cards is None:
+            cards = []
         self.cards: List[Card] = cards
 
     def evaluate_cards(self, commu_cards: List[Card]) -> None:
