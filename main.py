@@ -110,6 +110,19 @@ class Deck:
         for card in self.cards:
             print(card)
 
+class Hand:
+    def __init__(self, cards=[]) -> None:
+        self.cards: List[Card] = cards
+
+    def evaluate_cards(self, commu_cards: List[Card]) -> None:
+        pass
+
+    def add_cards(self, cards: List[Card]) -> None:
+        self.cards.extend(cards)
+
+    def clear_hand(self) -> None:
+        self.cards.clear()
+
 class Player:
     def __init__(self, id, chips, hand) -> None:
         self.id: int = id
@@ -119,19 +132,6 @@ class Player:
         self.has_folded: bool = False
 
     def make_bet(self, action: Action) -> None:
-        pass
-
-class Hand:
-    def __init__(self, cards=[]) -> None:
-        self.cards: List[Card] = cards
-
-    def evaluate_cards(self, commu_cards: List[Card]) -> None:
-        pass
-
-    def add_cards(self, cards: List[Card]) -> None:
-        pass
-
-    def clear_hand(self) -> None:
         pass
 
 class Poker:
