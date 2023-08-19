@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 import random
 
 class Rank(Enum):
@@ -52,100 +53,13 @@ class Action(Enum):
     ALL_IN = 4
 
 # Base Game
-class Poker:
-    def __init__(self, players, deck):
-        self.player = players
-        self.deck = deck
-        self.pot = 0
-        self.current_phase = Phase.PRE_FLOP
-        self.community_card = []
-
-    def generate_chips(self, number):
-        pass
-
-    def deal_cards(self):
-        pass
-
-    def betting_round(self):
-        pass
-
-    def change_phase(self):
-        pass
-
-    def determind_winner(self):
-        pass
-
-    def payout(self):
-        pass
-
-    def game_over(self):
-        pass
-
-class Player:
-    def __init__(self, id, chips, hand):
-        self.id = id
-        self.chips = chips
-        self.hand = hand
-        self.current_bet = 0
-        self.has_folded = False
-
-    def make_bet(self, action):
-        pass
-
-class Hand:
-    def __init__(self):
-        self.hand = []
-
-    def evaluate_cards(self, commu_cards):
-        pass
-
-    def add_cards(self, cards):
-        pass
-
-    def clear_hand(self):
-        pass
-
-class Deck:
-    def __init__(self, cards=None):
-        if cards is None:
-            cards = []
-        self.cards = cards
-
-    def shuffle(self):
-        temp = None
-        for i in range(len(self.cards)-1, -1, -1):
-            swap_index = random.randint(0, i)
-            temp = self.cards[swap_index]
-            self.cards[swap_index] = self.cards[i]
-            self.cards[i] = temp
-            temp = None
-
-    def draw(self, draw_number):
-        cards = []
-        for i in range(draw_number):
-            if self.is_empty():
-                print('Card is out of Deck!')
-            else:
-                cards.append(self.cards.pop())
-        return cards
-
-    def is_empty(self):
-        return len(self.cards) == 0
-
-    def append_card(self, card):
-        self.cards.append(card)
-    
-    def print_cards(self):
-        for card in self.cards:
-            print(card)
-
 class Card:
-    def __init__(self, rank, suit, color):
-       self.rank = rank
-       self.suit = suit
-       self.color = color
+    def __init__(self, rank, suit, color) -> None:
+        self.rank: Rank = rank
+        self.suit: Suit = suit
+        self.color: Color = color
 
-    def __str__(self):
+    def __str__(self) -> str:
         suit_symbol = self.suit.value
         rank_symbol = self.rank.name if self.rank.value >= 11 else str(self.rank.value)
     
@@ -162,7 +76,95 @@ class Card:
         ]
         return "\n".join(card_lines)
 
-# Initial Game
+class Deck:
+    def __init__(self, cards=None) -> None:
+        if cards is None:
+            cards = []
+        self.cards: List[Card] = cards
+
+    def shuffle(self) -> None:
+        temp = None
+        for i in range(len(self.cards)-1, -1, -1):
+            swap_index = random.randint(0, i)
+            temp = self.cards[swap_index]
+            self.cards[swap_index] = self.cards[i]
+            self.cards[i] = temp
+            temp = None
+
+    def draw(self, draw_number: int) -> List[Card]:
+        cards = []
+        for _ in range(draw_number):
+            if self.is_empty():
+                print('Card is out of Deck!')
+            else:
+                cards.append(self.cards.pop())
+        return cards
+
+    def is_empty(self) -> bool:
+        return len(self.cards) == 0
+
+    def append_card(self, card) -> None:
+        self.cards.append(card)
+    
+    def print_cards(self) -> None:
+        for card in self.cards:
+            print(card)
+
+class Player:
+    def __init__(self, id, chips, hand) -> None:
+        self.id: int = id
+        self.chips: int = chips
+        self.hand: Hand = hand
+        self.current_bet: int = 0
+        self.has_folded: bool = False
+
+    def make_bet(self, action: Action) -> None:
+        pass
+
+class Hand:
+    def __init__(self, cards=[]) -> None:
+        self.cards: List[Card] = cards
+
+    def evaluate_cards(self, commu_cards: List[Card]) -> None:
+        pass
+
+    def add_cards(self, cards: List[Card]) -> None:
+        pass
+
+    def clear_hand(self) -> None:
+        pass
+
+class Poker:
+    def __init__(self, players, deck) -> None:
+        self.player: List[Player] = players
+        self.deck: Deck = deck
+        self.pot: int = 0
+        self.current_phase: Phase = Phase.PRE_FLOP
+        self.community_card: List[Card] = []
+
+    def generate_chips(self, number: int) -> None:
+        pass
+
+    def deal_cards(self) -> None:
+        pass
+
+    def betting_round(self) -> None:
+        pass
+
+    def change_phase(self) -> None:
+        pass
+
+    def determind_winner(self) -> None:
+        pass
+
+    def payout(self) -> None:
+        pass
+
+    def game_over(self) -> None:
+        pass
+
+
+#################################### Initial Poker Game ####################################
 
 # create cards
 deck = Deck()
