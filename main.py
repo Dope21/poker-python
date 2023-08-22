@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List
+from typing import List, Union
 import random
 
 class Rank(Enum):
@@ -126,19 +126,20 @@ class Hand:
         self.cards.clear()
 
 class Player:
-    def __init__(self, id, chips, hand) -> None:
+    def __init__(self, id, chips, hand, next_player = None) -> None:
         self.id: int = id
         self.chips: int = chips
         self.hand: Hand = hand
         self.current_bet: int = 0
         self.has_folded: bool = False
+        self.next_player: Union[Player, None] = next_player
 
     def make_bet(self, action: Action) -> None:
         pass
 
 class Poker:
-    def __init__(self, players, deck) -> None:
-        self.player: List[Player] = players
+    def __init__(self, player, deck) -> None:
+        self.first_player: Player = player
         self.deck: Deck = deck
         self.pot: int = 0
         self.current_phase: Phase = Phase.PRE_FLOP
