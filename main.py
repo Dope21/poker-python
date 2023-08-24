@@ -119,8 +119,22 @@ class Hand:
 
     def evaluate_cards(self, commu_cards: List[Card]) -> None:
         all_cards = commu_cards + self.cards
-        for card in all_cards:
-            print(card)
+        all_cards = self.sort_hand(all_cards)
+
+        # wait for more ...
+
+    def sort_hand(self, cards: List[Card]):
+        if len(cards) <= 1: return cards
+        for current in range(1, len(cards)):
+            temp = cards[current]
+            previous = current - 1
+
+            while previous >= 0 and cards[previous].rank.value > temp.rank.value:
+                cards[previous + 1] = cards[previous] 
+                previous -= 1
+
+            cards[previous + 1] = temp
+        return cards
 
     def add_cards(self, cards: List[Card]) -> None:
         self.cards.extend(cards)
