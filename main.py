@@ -115,9 +115,12 @@ class Hand:
         if cards is None:
             cards = []
         self.cards: List[Card] = cards
+        self.stacks: List[Stack] = []
 
     def evaluate_cards(self, commu_cards: List[Card]) -> None:
-        pass
+        all_cards = commu_cards + self.cards
+        for card in all_cards:
+            print(card)
 
     def add_cards(self, cards: List[Card]) -> None:
         self.cards.extend(cards)
@@ -169,7 +172,6 @@ class Poker:
 
 #################################### Initial Poker Game ####################################
 
-# create cards
 deck = Deck()
 for rank in Rank:
     for suit in Suit:
@@ -178,3 +180,11 @@ for rank in Rank:
             color = Color.RED
         card = Card(rank=rank, suit=suit, color=color)
         deck.append_card(card)
+
+deck.shuffle()
+deck.shuffle()
+
+commu_cards = deck.draw(5)
+
+hand = Hand(cards=deck.draw(2))
+hand.evaluate_cards(commu_cards)
