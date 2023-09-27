@@ -204,17 +204,3 @@ for rank in Rank:
 
 deck.shuffle()
 deck.shuffle()
-
-commu_cards = deck.draw(5)
-
-# hand = Hand(cards=deck.draw(2))
-hand = Hand(cards=[
-    Card(Rank.ACE, Suit.SPADE, Color.BLACK),
-    Card(Rank.KING, Suit.SPADE, Color.RED),
-])
-test_rsf = [
-    Card(Rank.QUEEN, Suit.SPADE, Color.RED),
-    Card(Rank.JACK, Suit.SPADE, Color.RED),
-    Card(Rank.TEN, Suit.SPADE, Color.RED)
-]
-hand.evaluate_cards(test_rsf)
