@@ -3,7 +3,6 @@ from typing import List, Union
 import random
 
 class Rank(Enum):
-    ACE = 1
     TWO = 2
     THREE = 3
     FOUR = 4
@@ -16,6 +15,7 @@ class Rank(Enum):
     JACK = 11
     QUEEN = 12
     KING = 13
+    ACE = 14
 
 class Stack(Enum):
     ROYAL_STRAGHT_FLUSH = 1
@@ -121,6 +121,13 @@ class Hand:
         all_cards = commu_cards + self.cards
         all_cards = self.sort_hand(all_cards)
 
+        ## Royal Straht Flush
+        if len(all_cards) == 5 and all(card.suit == all_cards[0].suit for card in all_cards):
+            if all_cards[0].rank == Rank.TEN and all_cards[1].rank == Rank.JACK and all_cards[2].rank == Rank.QUEEN and all_cards[3].rank == Rank.KING and all_cards[4].rank == Rank.ACE:
+                pass
+
+        ## Straight Flush
+            
         # wait for more ...
 
     def sort_hand(self, cards: List[Card]):
@@ -200,5 +207,14 @@ deck.shuffle()
 
 commu_cards = deck.draw(5)
 
-hand = Hand(cards=deck.draw(2))
-hand.evaluate_cards(commu_cards)
+# hand = Hand(cards=deck.draw(2))
+hand = Hand(cards=[
+    Card(Rank.ACE, Suit.SPADE, Color.BLACK),
+    Card(Rank.KING, Suit.SPADE, Color.RED),
+])
+test_rsf = [
+    Card(Rank.QUEEN, Suit.SPADE, Color.RED),
+    Card(Rank.JACK, Suit.SPADE, Color.RED),
+    Card(Rank.TEN, Suit.SPADE, Color.RED)
+]
+hand.evaluate_cards(test_rsf)
