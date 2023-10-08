@@ -18,12 +18,12 @@ class Rank(Enum):
     ACE = 14
 
 class Stack(Enum):
-    ROYAL_STRAGHT_FLUSH = 1
-    STRAGHT_FLUSH = 2
+    ROYAL_FLUSH = 1
+    STRAIGHT_FLUSH = 2
     QUADS = 3
     FULL_HOUSE = 4
     FLUSH = 5
-    STRAGHT = 6
+    STRAIGHT = 6
     THREE = 7
     TWO_PAIR = 8
     ONE_PAIR = 9
