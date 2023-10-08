@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Union
+from typing import Dict, List, Union
 import random
 
 class Rank(Enum):
@@ -117,18 +117,42 @@ class Hand:
         self.cards: List[Card] = cards
         self.stacks: List[Stack] = []
 
-    def evaluate_cards(self, commu_cards: List[Card]) -> None:
-        all_cards = commu_cards + self.cards
-        all_cards = self.sort_hand(all_cards)
+    def evaluate_cards(self, cards: List[Card]) -> Dict[str, bool]:
+        suits = {
+            "H": 0,
+            "D": 0,
+            "S": 0,
+            "C": 0
+        }
+        ranks = [0] * 13
+        
+        for card in cards:
+            suits[card.suit.value] += 1
+            ranks[card.rank.value - 2] += 1
 
-        ## Royal Straht Flush
-        if len(all_cards) == 5 and all(card.suit == all_cards[0].suit for card in all_cards):
-            if all_cards[0].rank == Rank.TEN and all_cards[1].rank == Rank.JACK and all_cards[2].rank == Rank.QUEEN and all_cards[3].rank == Rank.KING and all_cards[4].rank == Rank.ACE:
-                pass
+        first_i = ranks.index(1) 
+        low_ace_indicator = all(value == 1 for value in ranks[:4] + [ranks[-1]])
+        consecutive = len(ranks[first_i:first_i+5]) == 5
+        pairs = len([value for value in ranks if value == 2])
+        full_house = 3 in ranks and pairs == 1  
 
-        ## Straight Flush
-            
-        # wait for more ...
+        stack = {
+            "royal_flush": False,
+            "straight_flush": False,
+            "quads": 4 in ranks,
+            "full_house": full_house,
+            "flush": 5 in suits,
+            "straight": consecutive or low_ace_indicator,
+            "trips": 3 in ranks,
+            "two_pairs": pairs == 2,
+            "pairs": pairs == 1,
+            "high_card": True
+        }
+
+        stack["royal_flush"] = stack["straight"] and stack["flush"] and first_i is 8
+        stack["straight_flush"] = stack["straight"] and stack["flush"]
+
+        return stack
 
     def sort_hand(self, cards: List[Card]):
         if len(cards) <= 1: return cards
