@@ -1,6 +1,5 @@
 from enum import Enum
 import itertools
-from re import fullmatch
 from typing import List, Union
 import itertools 
 import random
