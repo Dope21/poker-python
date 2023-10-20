@@ -44,8 +44,8 @@ class Phase(Enum):
     RIVER = 3
 
 class Color(Enum):
-    BLACK = "⚫"
-    RED = "🔴"
+    BLACK = "\033[30m"
+    RED = "\033[91m"
 
 class Action(Enum):
     FOLD = 0
@@ -65,18 +65,7 @@ class Card:
         suit_symbol = self.suit.value
         rank_symbol = self.rank.name if self.rank.value >= 11 else str(self.rank.value)
     
-        available_space = 17
-        rank_space = ' ' * ((available_space - len(rank_symbol)) // 2)
-    
-        card_lines = [
-            "+-----------------+",
-            "|                 |",
-            f"|{' '*6}{suit_symbol} {self.color.value}{' '*7}|",
-            f"|{rank_space}{rank_symbol}{' ' if len(rank_symbol) % 2 == 0 else ''}{rank_space}|",
-            "|                 |",
-            "+-----------------+"
-        ]
-        return "\n".join(card_lines)
+        return f"{self.color.value}{suit_symbol}\033[0m {rank_symbol}"
 
 class Deck:
     def __init__(self, cards=None) -> None:
@@ -284,8 +273,11 @@ hand_cards = [
 
 hand = Hand()
 hand.cards = hand_cards
+
 # hand.evaluate_cards(comnu_cards)
 hand.find_best_hande(ryf)
 for c in hand.best_cards:
-    print(c)
+    print(c, end=" ")
+
+print()
 print(hand.stack)
