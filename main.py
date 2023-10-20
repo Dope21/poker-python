@@ -1,5 +1,6 @@
 from enum import Enum
 import itertools
+from re import fullmatch
 from typing import List, Union
 import itertools 
 import random
@@ -26,7 +27,7 @@ class Stack(Enum):
     FULL_HOUSE = 7
     FLUSH = 6
     STRAIGHT = 5
-    THREE = 4
+    TRIPS = 4
     TWO_PAIR = 3
     ONE_PAIR = 2
     HIGH_CARD = 1
@@ -110,49 +111,38 @@ class Hand:
         self.best_cards: List[Card] = []
 
     def evaluate_cards(self, cards: List[Card]) -> Stack:
-        suits = {
-            "H": 0,
-            "D": 0,
-            "S": 0,
-            "C": 0
-        }
+        suits = { "H": 0, "D": 0, "S": 0, "C": 0 }
         ranks = [0] * 13
         
         for card in cards:
             suits[card.suit.value] += 1
             ranks[card.rank.value - 2] += 1
 
-        first_i = ranks.index(1) 
-        low_ace_indicator = all(value == 1 for value in ranks[:4] + [ranks[-1]])
-        consecutive = len(ranks[first_i:first_i+5]) == 5
-        pairs = len([value for value in ranks if value == 2])
-        full_house = 3 in ranks and pairs == 1  
+        if 1 in ranks:
+            first_i = ranks.index(1) 
+            low_ace_indicatior = all(value == 1 for value in ranks[:4] + [ranks[-1]])
+            ranks_part = ranks[first_i:first_i+5]
+            consecutive = len(ranks_part) == 5 and all(n == 1 for n in ranks_part)
+        else:
+            first_i = None
+            low_ace_indicatior = False
+            consecutive = False
+
         flush = any(value >= 5 for value in suits.values())
+        trips = 3 in ranks
+        pairs = ranks.count(2)
 
-        stack = {
-            "ROYAL_FLUSH": False,
-            "STRAIGHT_FLUSH": False,
-            "QUADS": 4 in ranks,
-            "FULL_HOUSE": full_house,
-            "FLUSH": flush,
-            "STRAIGHT": consecutive or low_ace_indicator,
-            "THRIPS": 3 in ranks,
-            "TWO_PAIR": pairs == 2,
-            "ONE_PAIR": pairs == 1,
-            "HIGH_CARD": True
-        }
-
-        stack["ROYAL_FLUSH"] = stack["STRAIGHT"] and stack["FLUSH"] and first_i == 8
-        stack["STRAIGHT_FLUSH"] = stack["STRAIGHT"] and stack["FLUSH"]
-
-        first_hit = "HIGH_CARD"
-
-        for key, value in stack.items():
-            if value:
-                first_hit = key
-                break
-
-        return Stack[first_hit]
+        if (consecutive or low_ace_indicatior) and flush:
+            if first_i == 8: return Stack.ROYAL_FLUSH
+            return Stack.STRAIGHT_FLUSH
+        if 4 in ranks: return Stack.QUADS
+        if trips and pairs: return Stack.FULL_HOUSE
+        if flush: return Stack.FLUSH
+        if consecutive: return Stack.STRAIGHT
+        if trips: return Stack.TRIPS
+        if pairs == 2: return Stack.TWO_PAIR
+        if pairs: return Stack.ONE_PAIR
+        return Stack.HIGH_CARD
 
     def find_best_hande(self, commnu_cards: List[Card]) -> None: 
         all_cards = self.cards + commnu_cards
@@ -257,7 +247,6 @@ for rank in Rank:
 deck.shuffle()
 deck.shuffle()
 
-# ROYAL_FLUSH Cards
 ryf = [
     Card(rank=Rank.ACE, suit=Suit.HEART, color=Color.RED),
     Card(rank=Rank.KING, suit=Suit.HEART, color=Color.RED),
@@ -266,18 +255,14 @@ ryf = [
     Card(rank=Rank.TEN, suit=Suit.HEART, color=Color.RED)
 ]
 
-hand_cards = [
-    Card(rank=Rank.TWO, suit=Suit.SPADE, color=Color.BLACK),
-    Card(rank=Rank.ACE, suit=Suit.CLUB, color=Color.BLACK)
-]
+hand_cards = []
 
 hand = Hand()
 hand.cards = hand_cards
 
-# hand.evaluate_cards(comnu_cards)
 hand.find_best_hande(ryf)
 for c in hand.best_cards:
-    print(c, end=" ")
+    print(c, end=" | ")
 
 print()
 print(hand.stack)
