@@ -201,9 +201,9 @@ class Hand:
         self.cards.clear()
 
 class Player:
-    def __init__(self, id, chips, hand, next_player = None) -> None:
+    def __init__(self, id, hand, next_player = None) -> None:
         self.id: int = id
-        self.chips: int = chips
+        self.chips: int = 0
         self.hand: Hand = hand
         self.current_bet: int = 0
         self.has_folded: bool = False
@@ -213,15 +213,38 @@ class Player:
         pass
 
 class Poker:
-    def __init__(self, player, deck) -> None:
-        self.first_player: Player = player
-        self.deck: Deck = deck
+    def __init__(self) -> None:
+        self.deck: Deck = Deck()
+        self.first_player: Union[Player, None] = None
         self.pot: int = 0
         self.current_phase: Phase = Phase.PRE_FLOP
         self.community_card: List[Card] = []
 
-    def generate_chips(self, number: int) -> None:
-        pass
+        # Create cards
+        for rank in Rank:
+            for suit in Suit:
+                color = Color.BLACK
+                if suit.name == 'HEART' or suit.name == 'DIAMOND':
+                    color = Color.RED
+                card = Card(rank=rank, suit=suit, color=color)
+                self.deck.append_card(card)
+
+    def create_players(self, no_of_player: int) -> None:
+      for i in range(no_of_player):
+            new_player = Player(id=i, hand=Hand())
+            if self.first_player is None:
+                self.first_player = new_player
+            else:
+                player = self.first_player
+                while player.next_player:
+                    player = player.next_player
+                player.next_player = new_player   
+
+    def generate_chips(self, amount: int) -> None:
+        player = self.first_player
+        while player:
+            player.chips = amount
+            player = player.next_player
 
     def deal_cards(self) -> None:
         pass
@@ -243,32 +266,31 @@ class Poker:
 
 
 #################################### Initial Poker Game ####################################
+poker = Poker()
 
-deck = Deck()
-for rank in Rank:
-    for suit in Suit:
-        color = Color.BLACK
-        if suit.name == 'HEART' or suit.name == 'DIAMOND':
-            color = Color.RED
-        card = Card(rank=rank, suit=suit, color=color)
-        deck.append_card(card)
+# fixed number of player to 2
+poker.create_players(2)
 
-ryf = [
-    Card(rank=Rank.ACE, suit=Suit.HEART, color=Color.RED),
-    Card(rank=Rank.KING, suit=Suit.HEART, color=Color.RED),
-    Card(rank=Rank.QUEEN, suit=Suit.HEART, color=Color.RED),
-    Card(rank=Rank.JACK, suit=Suit.HEART, color=Color.RED),
-    Card(rank=Rank.TEN, suit=Suit.HEART, color=Color.RED)
-]
+# generate chips
+while True:
+    try:
+        chips = int(input("How many chips would you like to play? Enter a number: "))
+        print("You entered:", chips)
+        if chips <= 0 or chips > 100: raise ValueError
+        poker.generate_chips(chips)
+        break
+    except ValueError:
+        print("Please enter a number 0 - 100")
 
-hand_cards = []
+# Give players cards
+while True:
+    try:
+        pass
+    except ValueError:
+        pass
 
-hand = Hand()
-hand.cards = hand_cards
-
-deck.riffle_shuffle()
-deck.fisher_shuffle()
-deck.riffle_shuffle()
-
-for c in deck.cards:
-    print(c)
+# test
+player = poker.first_player
+while player:
+    print(player.id, player.chips)
+    player = player.next_player
