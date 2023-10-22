@@ -73,7 +73,7 @@ class Deck:
             cards = []
         self.cards: List[Card] = cards
 
-    def shuffle(self) -> None:
+    def fisher_shuffle(self) -> None:
         temp = None
         for i in range(len(self.cards)-1, -1, -1):
             swap_index = random.randint(0, i)
@@ -81,6 +81,16 @@ class Deck:
             self.cards[swap_index] = self.cards[i]
             self.cards[i] = temp
             temp = None
+
+    def riffle_shuffle(self) -> None:
+        split_index = random.randint(24, 28)
+        q1 = self.cards[:split_index]
+        q2 = self.cards[split_index:]
+        shuffle_deck = []
+        while len(q1) or len(q2):
+            if len(q1): shuffle_deck.append(q1.pop(0))
+            if len(q2): shuffle_deck.append(q2.pop(0))
+        self.cards = shuffle_deck
 
     def draw(self, draw_number: int) -> List[Card]:
         cards = []
@@ -243,9 +253,6 @@ for rank in Rank:
         card = Card(rank=rank, suit=suit, color=color)
         deck.append_card(card)
 
-deck.shuffle()
-deck.shuffle()
-
 ryf = [
     Card(rank=Rank.ACE, suit=Suit.HEART, color=Color.RED),
     Card(rank=Rank.KING, suit=Suit.HEART, color=Color.RED),
@@ -259,9 +266,9 @@ hand_cards = []
 hand = Hand()
 hand.cards = hand_cards
 
-hand.find_best_hande(ryf)
-for c in hand.best_cards:
-    print(c, end=" | ")
+deck.riffle_shuffle()
+deck.fisher_shuffle()
+deck.riffle_shuffle()
 
-print()
-print(hand.stack)
+for c in deck.cards:
+    print(c)
