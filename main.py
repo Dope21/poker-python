@@ -92,6 +92,7 @@ class Deck:
         self.cards = shuffle_deck
 
     def draw(self, draw_number: int) -> List[Card]:
+        if draw_number == 0: return []
         cards = []
         for _ in range(draw_number):
             if self.is_empty():
@@ -152,7 +153,7 @@ class Hand:
         if pairs: return Stack.ONE_PAIR
         return Stack.HIGH_CARD
 
-    def find_best_hande(self, commnu_cards: List[Card]) -> None: 
+    def find_best_hand(self, commnu_cards: List[Card]) -> None: 
         all_cards = self.cards + commnu_cards
        
         best_hand = []
@@ -199,6 +200,16 @@ class Hand:
     def clear_hand(self) -> None:
         self.cards.clear()
 
+    def display_hand(self) -> None:
+        for c in self.cards:
+            print(c, end=", ")
+        print()
+
+    def display_best_cards(self) -> None:
+        for c in self.best_cards:
+            print(c, end=", ")
+        print()
+
 class Player:
     def __init__(self, id, hand, next_player = None) -> None:
         self.id: int = id
@@ -212,9 +223,9 @@ class Player:
         pass
 
 class Poker:
-    def __init__(self) -> None:
+    def __init__(self, player) -> None:
         self.deck: Deck = Deck()
-        self.first_player: Union[Player, None] = None
+        self.first_player: Player = player
         self.pot: int = 0
         self.current_phase: Phase = Phase.PRE_FLOP
         self.community_card: List[Card] = []
@@ -230,22 +241,12 @@ class Poker:
         self.deck.riffle_shuffle()
         self.deck.fisher_shuffle()
 
-    def create_players(self, no_of_player: int) -> None:
-      for i in range(no_of_player):
-            new_player = Player(id=i, hand=Hand())
-            if self.first_player is None:
-                self.first_player = new_player
-            else:
-                player = self.first_player
-                while player.next_player:
-                    player = player.next_player
-                player.next_player = new_player   
-
     def generate_chips(self, amount: int) -> None:
         player = self.first_player
         while player:
             player.chips = amount
             player = player.next_player
+            if player == self.first_player: break
 
     def deal_cards(self) -> None:
         player = self.first_player
@@ -253,6 +254,17 @@ class Poker:
             first_hand = self.deck.draw(2) 
             player.hand.cards = first_hand
             player = player.next_player
+            if player == self.first_player: break
+
+    def draw_community_cards(self, phase: Phase) -> None:
+        cards = self.deck.draw(phase.value)
+        self.community_card.extend(cards)
+
+    def display_community_cards(self) -> None:
+        print("Community Cards: ", end=" ")
+        for c in self.community_card:
+            print(c, end=", ")
+        print()
 
     def betting_round(self) -> None:
         pass
@@ -269,12 +281,23 @@ class Poker:
     def game_over(self) -> None:
         pass
 
+    @staticmethod
+    def create_players(no_of_player: int) -> Player:
+        player = Player(id=0, hand=Hand())
+        first_player = player
+
+        for i in range(1, no_of_player):
+            new_player = Player(id=i, hand=Hand())
+            player.next_player = new_player
+            player = player.next_player
+
+        player.next_player = first_player
+        return first_player
+
 
 #################################### Initial Poker Game ####################################
-poker = Poker()
-
-# fixed number of player to 2
-poker.create_players(2)
+first_player = Poker.create_players(2)
+poker = Poker(first_player)
 
 # generate chips
 while True:
@@ -291,13 +314,14 @@ poker.deal_cards()
 
 #################################### Game Start ####################################
 
-# initial Phase
-# draw community cards relate to phase
+# / initial Phase
+# / draw community cards relate to phase
 
-# player start their turn
+# / player start their turn
 
-    ## print out community cards
-    ## calulate best hand and print out
+    ## / print out community cards
+    ## / print hand cards
+    ## / calulate best hand and print out
     ## betting chips on the table
         ### show the highest bet
         ### show player current bet
@@ -315,15 +339,37 @@ poker.deal_cards()
 
     ## go to next player
 
+phase_start = True
+while phase_start:
+    try:
+        # inital
+        print(f"Phase: {poker.current_phase.name}")
+        poker.draw_community_cards(poker.current_phase)  
+
+        # betting
+        betting_round = True
+        player = poker.first_player
+        if player is None: raise ValueError("First player is None!")
+        while betting_round:
+
+            poker.display_community_cards()
+            if player is None: raise ValueError("Player is None!")
+            print(f"Player {player.id} turn!!")
+
+            print("Your Cards: ", end="")
+            player.hand.display_hand()
+
+            player.hand.find_best_hand(poker.community_card)
+            print("Your Best Rank is", player.hand.stack.name)
+
+            print("Your Best Cards Stack: ", end="")
+            player.hand.display_best_cards()
+
+            player = player.next_player
+
+            betting_round = False
+        phase_start = False
+    except ValueError as error:
+        print(error)
+
 #################################### End ####################################
-
-# test
-player = poker.first_player
-while player:
-    print(player.id, player.chips)
-
-    for c in player.hand.cards:
-        print(c)
-    print('.')
-    print('.')
-    player = player.next_player
