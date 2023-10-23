@@ -54,7 +54,6 @@ class Action(Enum):
     CALL = 3
     ALL_IN = 4
 
-# Base Game
 class Card:
     def __init__(self, rank, suit, color) -> None:
         self.rank: Rank = rank
@@ -261,7 +260,7 @@ class Poker:
     def change_phase(self) -> None:
         pass
 
-    def determind_winner(self) -> None:
+    def determine_winner(self) -> None:
         pass
 
     def payout(self) -> None:
