@@ -249,7 +249,11 @@ class Poker:
             player = player.next_player
 
     def deal_cards(self) -> None:
-        pass
+        player = self.first_player
+        while player:
+            first_hand = self.deck.draw(2) 
+            player.hand.cards = first_hand
+            player = player.next_player
 
     def betting_round(self) -> None:
         pass
@@ -284,15 +288,21 @@ while True:
     except ValueError:
         print("Please enter a number 1 - 100")
 
-# Give players cards
-while True:
-    try:
-        pass
-    except ValueError:
-        pass
+poker.deal_cards()
+
+#################################### Start Betting ####################################
+
+
+
+#################################### End ####################################
 
 # test
 player = poker.first_player
 while player:
     print(player.id, player.chips)
+
+    for c in player.hand.cards:
+        print(c)
+    print('.')
+    print('.')
     player = player.next_player
