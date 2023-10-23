@@ -39,9 +39,9 @@ class Suit(Enum):
 
 class Phase(Enum):
     PRE_FLOP = 0
-    FLOP = 1
-    TURN = 2
-    RIVER = 3
+    FLOP = 3
+    TURN = 1
+    RIVER = 1
 
 class Color(Enum):
     BLACK = "\033[30m"
@@ -290,9 +290,31 @@ while True:
 
 poker.deal_cards()
 
-#################################### Start Betting ####################################
+#################################### Game Start ####################################
 
+# initial Phase
+# draw community cards relate to phase
 
+# player start their turn
+
+    ## print out community cards
+    ## calulate best hand and print out
+    ## betting chips on the table
+        ### show the highest bet
+        ### show player current bet
+        ### select action Call, Riase, Fold, All-in, Check
+    
+    ## compare betting conditions
+        ### if all last bet is 0 and total bet is equal
+            #### restart and go back to intial phase
+            #### if the last phase the showdown
+                ##### determine winner 
+                ##### re-start the game
+        ### if player fold then another player win
+            #### re-start the game
+        ### if total bet is equal then keep betting phase going
+
+    ## go to next player
 
 #################################### End ####################################
 
