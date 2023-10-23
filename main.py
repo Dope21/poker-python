@@ -228,6 +228,8 @@ class Poker:
                     color = Color.RED
                 card = Card(rank=rank, suit=suit, color=color)
                 self.deck.append_card(card)
+        self.deck.riffle_shuffle()
+        self.deck.fisher_shuffle()
 
     def create_players(self, no_of_player: int) -> None:
       for i in range(no_of_player):
@@ -280,7 +282,7 @@ while True:
         poker.generate_chips(chips)
         break
     except ValueError:
-        print("Please enter a number 0 - 100")
+        print("Please enter a number 1 - 100")
 
 # Give players cards
 while True:
