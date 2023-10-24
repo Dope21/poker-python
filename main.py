@@ -229,7 +229,7 @@ class Player:
 
     def display_bet(self) -> None:
         print("Your current bet is", self.current_bet)
-        print(f"You have {self.chips} left")
+        print(f"You have {self.chips} chips left")
 
 class Poker:
     def __init__(self, player) -> None:
@@ -381,9 +381,12 @@ while main:
                 while player_turn:
                     os.system('clear')
                     print(f"Phase: {poker.current_phase.name}")
+                    print("Minimum betting chips:", min_chips)
+                    print("Chips in the pot", poker.pot)
                     poker.display_community_cards()
                     if player is None: raise ValueError("Player is None!")
-                    print(f"Player {player.id} turn!!")
+                    print(f"================ Player {player.id} turn ================")
+                    player.display_bet()
 
                     print("Your Cards: ", end="")
                     player.hand.display_hand()
@@ -414,7 +417,7 @@ while main:
 
                             # action bet
                             if action == "b": 
-
+                                if player.chips == 0: raise ValueError("You can't bet anymore money")
                                 betting = True
                                 while betting:
                                     try:
@@ -425,11 +428,11 @@ while main:
 
                                         # call action
                                         if action == "c":
+                                            print()
                                             if player.current_bet + player.chips < min_chips: raise ValueError("Your Chips is not enough!")
                                             betting_chips = min_chips - player.current_bet
                                             player.make_bet(betting_chips)
                                             player.last_action = Action.CALL
-                                            player.display_bet()
 
                                         # raise action
                                         if action == "r":
@@ -437,25 +440,27 @@ while main:
                                             while raise_chips:
                                                 try:
                                                     betting_chips = 0
-                                                    print("Minimum betting chips:", min_chips)
-                                                    print("Your current bet:", player.current_bet)
-                                                    print("Your current chips:", player.chips)
                                                     betting_chips = int(input("How many chips you want to raise? "))
                                                     if betting_chips + player.current_bet < min_chips: raise ValueError("Please betting more than the minimum")
                                                     if betting_chips > player.chips: raise ValueError("Your chips is not enough!")
                                                     min_chips = player.current_bet + betting_chips
                                                     player.make_bet(betting_chips)
                                                     player.last_action = Action.RISE
-                                                    player.display_bet()
                                                     raise_chips = False
                                                 except ValueError as error:
                                                     print(error)
 
                                         poker.pot += betting_chips
-                                        print("Minimum betting chips:", min_chips)
-                                        print("Chips in the pot", poker.pot)
                                         betting_chips = 0
                                         betting = False
+
+                                        print(".")
+                                        print(".")
+                                        print(".")
+                                        print("Minimum betting chips:", min_chips)
+                                        print("Chips in the pot", poker.pot)
+                                        player.display_bet()
+                                        input("Enter to continue...")
                                     except ValueError as error:
                                         print(error)
 
@@ -474,6 +479,7 @@ while main:
                             select_action = False
                         except ValueError as error:
                             print(error)
+                            input("Enter to continue...")
 
                     player = player.next_player
                     # end of select action
