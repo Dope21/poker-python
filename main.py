@@ -460,11 +460,15 @@ while main:
                                         print(error)
 
                             if action == "f": 
+                                os.system('clear')
                                 player.last_action = Action.FOLD
                                 if player.next_player is None: raise ValueError("player is None")
-                                print(f"winner is player {player.next_player.id}")
+                                print(f"Player {player.id} has Fold")
+                                print(f"!! Winner is player {player.next_player.id} !!")
+                                player_turn = False
                                 phase_start = False
-                                main = False
+                                game_start = False
+                                input("Enter to continue...")
 
                             action = ""
                             select_action = False
