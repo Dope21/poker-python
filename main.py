@@ -1,8 +1,8 @@
+from typing import List, Union
 from enum import Enum
 import itertools
-from typing import List, Union
-import itertools 
 import random
+import os
 
 class Rank(Enum):
     TWO = 2
@@ -156,13 +156,12 @@ class Hand:
 
     def find_best_hand(self, commnu_cards: List[Card]) -> None: 
         all_cards = self.cards + commnu_cards
-       
+    
         best_hand = []
-        hit_rank = Stack.HIGH_CARD
+        hit_rank = None
 
-        if len(all_cards) >= 5:
+        if len(all_cards) > 5:
             combinations = list(itertools.combinations(all_cards, 5))
-
             for combo in combinations:
                 combo_list = list(combo) # convert from tuple
                 new_rank = self.evaluate_cards(combo_list)
@@ -174,13 +173,12 @@ class Hand:
                 if hit_rank.value < new_rank.value:
                     hit_rank = new_rank 
                     best_hand = combo_list
-
         else:
             best_hand = all_cards
             hit_rank = self.evaluate_cards(all_cards)
 
-        self.best_cards = self.sort_cards(best_hand)
-        self.stack = hit_rank
+        self.best_cards = best_hand
+        self.stack = Stack.HIGH_CARD if hit_rank is None else hit_rank
 
     def sort_cards(self, cards: List[Card]):
         if len(cards) <= 1: return cards
@@ -207,7 +205,8 @@ class Hand:
         print()
 
     def display_best_cards(self) -> None:
-        for c in self.best_cards:
+        cards = self.sort_cards(self.best_cards)
+        for c in cards:
             print(c, end=", ")
         print()
 
@@ -310,9 +309,10 @@ class Poker:
         if winner and comparer:
             if winner.hand.stack.value < comparer.hand.stack.value:
                 winner = comparer
-            if winner.hand.stack.value == comparer.hand.stack.value:
-                if winner.hand.get_high_card.rank == comparer.hand.get_high_card.rank:
+            elif winner.hand.stack.value == comparer.hand.stack.value:
+                if winner.hand.get_high_card.rank.value == comparer.hand.get_high_card.rank.value:
                     print("!! Both Players are equal !!")
+                    return
                 if winner.hand.get_high_card.rank.value < comparer.hand.get_high_card.rank.value:
                     winner = comparer
         print(f"!! Winner is Player {winner.id} !!")
@@ -341,7 +341,7 @@ class Poker:
 
 main = True
 while main:
-
+    os.system('clear')
     #################################### Initial Poker Game ####################################
     first_player = Poker.create_players(2)
     poker = Poker(first_player)
@@ -363,12 +363,11 @@ while main:
     #################################### Game Start ####################################
     game_start = True
     while game_start:
+        os.system('clear')
         min_chips = 0
         phase_start = True
         while phase_start:
             try:
-                # inital
-                print(f"Phase: {poker.current_phase.name}")
                 if poker.current_phase != Phase.PRE_FLOP:
                     poker.draw_community_cards(poker.current_phase)  
 
@@ -377,7 +376,8 @@ while main:
                 player = poker.first_player
                 if player is None: raise ValueError("First player is None!")
                 while player_turn:
-
+                    os.system('clear')
+                    print(f"Phase: {poker.current_phase.name}")
                     poker.display_community_cards()
                     if player is None: raise ValueError("Player is None!")
                     print(f"Player {player.id} turn!!")
@@ -402,10 +402,12 @@ while main:
                                 player.last_action = Action.CHECK
                                 if poker.change_phase(): player_turn = False
                                 if poker.current_phase == Phase.PAYOUT:
+                                    os.system('clear')
                                     poker.payout()
                                     poker.determine_winner()
                                     phase_start = False
                                     game_start = False
+                                    input("Enter to continue...")
 
                             # action bet
                             if action == "b": 
@@ -475,5 +477,4 @@ while main:
             except ValueError as error:
                 print(error)
         
-
 #################################### End ####################################
