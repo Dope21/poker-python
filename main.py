@@ -211,8 +211,12 @@ class Hand:
         print()
 
     @property
-    def get_high_card(self) -> Card:
-        return self.best_cards[-1]
+    def value(self) -> int:
+        return self.stack.value
+
+    @property
+    def high_card_value(self) -> int:
+        return self.best_cards[-1].rank.value
 
 class Player:
     def __init__(self, id, hand, next_player = None) -> None:
@@ -310,14 +314,14 @@ class Poker:
         winner = self.first_player
         comparer = winner.next_player
         if winner and comparer:
-            if winner.hand.stack.value < comparer.hand.stack.value:
+            if winner.hand.value < comparer.hand.value: # compare for rank
                 winner = comparer
-            elif winner.hand.stack.value == comparer.hand.stack.value:
-                if winner.hand.get_high_card.rank.value == comparer.hand.get_high_card.rank.value:
+            elif winner.hand.value == comparer.hand.value: # compare for high card
+                if winner.hand.high_card_value < comparer.hand.high_card_value: 
+                    winner = comparer
+                elif winner.hand.high_card_value == comparer.hand.high_card_value:
                     print("!! Both Players are equal !!")
                     return
-                if winner.hand.get_high_card.rank.value < comparer.hand.get_high_card.rank.value:
-                    winner = comparer
         print(f"!! Winner is Player {winner.id} !!")
 
     def payout(self) -> None:
@@ -340,7 +344,6 @@ class Poker:
 
         player.next_player = first_player
         return first_player
-
 
 main = True
 while main:
