@@ -273,10 +273,13 @@ class Poker:
         self.community_card.extend(cards)
 
     def display_community_cards(self) -> None:
-        print("Community Cards: ", end=" ")
-        for c in self.community_card:
-            print(c, end=", ")
-        print()
+        if len(self.community_card):
+            print("Community Cards: ", end=" ")
+            for c in self.community_card:
+                print(c, end=", ")
+            print()
+        else:
+            print("Community Cards: None")
 
     def change_phase(self) -> bool:
         if self.first_player.last_action != Action.CHECK: return False
