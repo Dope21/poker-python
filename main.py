@@ -39,9 +39,10 @@ class Suit(Enum):
 
 class Phase(Enum):
     PRE_FLOP = 0
-    FLOP = 3
-    TURN = 1
-    RIVER = 1
+    FLOP = 1
+    TURN = 2
+    RIVER = 3
+    PAYOUT = 4
 
 class Color(Enum):
     BLACK = "\033[30m"
@@ -178,7 +179,7 @@ class Hand:
             best_hand = all_cards
             hit_rank = self.evaluate_cards(all_cards)
 
-        self.best_cards = best_hand
+        self.best_cards = self.sort_cards(best_hand)
         self.stack = hit_rank
 
     def sort_cards(self, cards: List[Card]):
@@ -210,17 +211,26 @@ class Hand:
             print(c, end=", ")
         print()
 
+    @property
+    def get_high_card(self) -> Card:
+        return self.best_cards[-1]
+
 class Player:
     def __init__(self, id, hand, next_player = None) -> None:
         self.id: int = id
         self.chips: int = 0
         self.hand: Hand = hand
         self.current_bet: int = 0
-        self.has_folded: bool = False
+        self.last_action: Union[Action, None] = None
         self.next_player: Union[Player, None] = next_player
 
-    def make_bet(self, action: Action) -> None:
-        pass
+    def make_bet(self, chips: int):
+        self.current_bet += chips
+        self.chips -= chips
+
+    def display_bet(self) -> None:
+        print("Your current bet is", self.current_bet)
+        print(f"You have {self.chips} left")
 
 class Poker:
     def __init__(self, player) -> None:
@@ -257,7 +267,10 @@ class Poker:
             if player == self.first_player: break
 
     def draw_community_cards(self, phase: Phase) -> None:
-        cards = self.deck.draw(phase.value)
+        if phase == Phase.PAYOUT: return
+        draw_number = 1
+        if phase == Phase.FLOP: draw_number = 3
+        cards = self.deck.draw(draw_number)
         self.community_card.extend(cards)
 
     def display_community_cards(self) -> None:
@@ -266,20 +279,51 @@ class Poker:
             print(c, end=", ")
         print()
 
-    def betting_round(self) -> None:
-        pass
+    def change_phase(self) -> bool:
+        if self.first_player.last_action != Action.CHECK: return False
+        player = self.first_player.next_player
+        equal_bet = False
+        while player and player.next_player:
+            equal_bet = player.current_bet == player.next_player.current_bet
+            if player.last_action != Action.CHECK: return False
+            if player == self.first_player: break
+            player = player.next_player
+        if not equal_bet: return False
+        if self.current_phase == Phase.PRE_FLOP: self.current_phase = Phase.FLOP
+        elif self.current_phase == Phase.FLOP: self.current_phase = Phase.TURN
+        elif self.current_phase == Phase.TURN: self.current_phase = Phase.RIVER
+        else: self.current_phase = Phase.PAYOUT
 
-    def change_phase(self) -> None:
-        pass
+        return True
+    
+    def reset_player_action(self) -> None:
+        self.first_player.last_action = None
+        player = self.first_player
+        while player:
+            player.last_action = None
+            player = player.next_player
+            if player == self.first_player: break
 
     def determine_winner(self) -> None:
-        pass
+        winner = self.first_player
+        comparer = winner.next_player
+        if winner and comparer:
+            if winner.hand.stack.value < comparer.hand.stack.value:
+                winner = comparer
+            if winner.hand.stack.value == comparer.hand.stack.value:
+                if winner.hand.get_high_card.rank == comparer.hand.get_high_card.rank:
+                    print("!! Both Players are equal !!")
+                if winner.hand.get_high_card.rank.value < comparer.hand.get_high_card.rank.value:
+                    winner = comparer
+        print(f"!! Winner is Player {winner.id} !!")
 
     def payout(self) -> None:
-        pass
-
-    def game_over(self) -> None:
-        pass
+        player = self.first_player
+        while player:
+            print(f"Player {player.id} best hand is {player.hand.stack}")
+            player.hand.display_best_cards()
+            if player.next_player == self.first_player: break
+            player = player.next_player
 
     @staticmethod
     def create_players(no_of_player: int) -> Player:
@@ -295,81 +339,141 @@ class Poker:
         return first_player
 
 
-#################################### Initial Poker Game ####################################
-first_player = Poker.create_players(2)
-poker = Poker(first_player)
+main = True
+while main:
 
-# generate chips
-while True:
-    try:
-        chips = int(input("How many chips would you like to play? Enter a number: "))
-        print("You entered:", chips)
-        if chips <= 0 or chips > 100: raise ValueError
-        poker.generate_chips(chips)
-        break
-    except ValueError:
-        print("Please enter a number 1 - 100")
+    #################################### Initial Poker Game ####################################
+    first_player = Poker.create_players(2)
+    poker = Poker(first_player)
 
-poker.deal_cards()
+    # generate chips
+    while True:
+        try:
+            chips = int(input("How many chips would you like to play? Enter a number: "))
+            print("You entered:", chips)
+            if chips <= 0 or chips > 100: raise ValueError
+            poker.generate_chips(chips)
+            break
+        except ValueError:
+            print("Please enter a number 1 - 100")
+            continue
 
-#################################### Game Start ####################################
+    poker.deal_cards()
 
-# / initial Phase
-# / draw community cards relate to phase
+    #################################### Game Start ####################################
+    game_start = True
+    while game_start:
+        min_chips = 0
+        phase_start = True
+        while phase_start:
+            try:
+                # inital
+                print(f"Phase: {poker.current_phase.name}")
+                if poker.current_phase != Phase.PRE_FLOP:
+                    poker.draw_community_cards(poker.current_phase)  
 
-# / player start their turn
+                # start player turn
+                player_turn = True
+                player = poker.first_player
+                if player is None: raise ValueError("First player is None!")
+                while player_turn:
 
-    ## / print out community cards
-    ## / print hand cards
-    ## / calulate best hand and print out
-    ## betting chips on the table
-        ### show the highest bet
-        ### show player current bet
-        ### select action Call, Riase, Fold, All-in, Check
-    
-    ## compare betting conditions
-        ### if all last bet is 0 and total bet is equal
-            #### restart and go back to intial phase
-            #### if the last phase the showdown
-                ##### determine winner 
-                ##### re-start the game
-        ### if player fold then another player win
-            #### re-start the game
-        ### if total bet is equal then keep betting phase going
+                    poker.display_community_cards()
+                    if player is None: raise ValueError("Player is None!")
+                    print(f"Player {player.id} turn!!")
 
-    ## go to next player
+                    print("Your Cards: ", end="")
+                    player.hand.display_hand()
 
-phase_start = True
-while phase_start:
-    try:
-        # inital
-        print(f"Phase: {poker.current_phase.name}")
-        poker.draw_community_cards(poker.current_phase)  
+                    player.hand.find_best_hand(poker.community_card)
+                    print("Your Best Rank is", player.hand.stack.name)
 
-        # betting
-        betting_round = True
-        player = poker.first_player
-        if player is None: raise ValueError("First player is None!")
-        while betting_round:
+                    print("Your Best Cards Stack: ", end="")
+                    player.hand.display_best_cards()
 
-            poker.display_community_cards()
-            if player is None: raise ValueError("Player is None!")
-            print(f"Player {player.id} turn!!")
+                    select_action = True
+                    while select_action:
+                        try:
+                            action = input("Type the first letter to select your action: [C]heck, [B]et, [F]old ")
+                            if action.lower() not in ["c", "b", "f"]: raise ValueError("Please type only the first letter")
 
-            print("Your Cards: ", end="")
-            player.hand.display_hand()
+                            # action check
+                            if action == "c": 
+                                player.last_action = Action.CHECK
+                                if poker.change_phase(): player_turn = False
+                                if poker.current_phase == Phase.PAYOUT:
+                                    poker.payout()
+                                    poker.determine_winner()
+                                    phase_start = False
+                                    game_start = False
 
-            player.hand.find_best_hand(poker.community_card)
-            print("Your Best Rank is", player.hand.stack.name)
+                            # action bet
+                            if action == "b": 
 
-            print("Your Best Cards Stack: ", end="")
-            player.hand.display_best_cards()
+                                betting = True
+                                while betting:
+                                    try:
+                                        betting_chips = 0
+                                        action = ""
+                                        action = input("Type the first letter to select your action: [C]all, [R]aise ")
+                                        if action.lower() not in ["c", "r"]: raise ValueError("Please type only the first letter")
 
-            player = player.next_player
+                                        # call action
+                                        if action == "c":
+                                            if player.current_bet + player.chips < min_chips: raise ValueError("Your Chips is not enough!")
+                                            betting_chips = min_chips - player.current_bet
+                                            player.make_bet(betting_chips)
+                                            player.last_action = Action.CALL
+                                            player.display_bet()
 
-            betting_round = False
-        phase_start = False
-    except ValueError as error:
-        print(error)
+                                        # raise action
+                                        if action == "r":
+                                            raise_chips = True
+                                            while raise_chips:
+                                                try:
+                                                    betting_chips = 0
+                                                    print("Minimum betting chips:", min_chips)
+                                                    print("Your current bet:", player.current_bet)
+                                                    print("Your current chips:", player.chips)
+                                                    betting_chips = int(input("How many chips you want to raise? "))
+                                                    if betting_chips + player.current_bet < min_chips: raise ValueError("Please betting more than the minimum")
+                                                    if betting_chips > player.chips: raise ValueError("Your chips is not enough!")
+                                                    min_chips = player.current_bet + betting_chips
+                                                    player.make_bet(betting_chips)
+                                                    player.last_action = Action.RISE
+                                                    player.display_bet()
+                                                    raise_chips = False
+                                                except ValueError as error:
+                                                    print(error)
+
+                                        poker.pot += betting_chips
+                                        print("Minimum betting chips:", min_chips)
+                                        print("Chips in the pot", poker.pot)
+                                        betting_chips = 0
+                                        betting = False
+                                    except ValueError as error:
+                                        print(error)
+
+                            if action == "f": 
+                                player.last_action = Action.FOLD
+                                if player.next_player is None: raise ValueError("player is None")
+                                print(f"winner is player {player.next_player.id}")
+                                phase_start = False
+                                main = False
+
+                            action = ""
+                            select_action = False
+                        except ValueError as error:
+                            print(error)
+
+                    player = player.next_player
+                    # end of select action
+
+                poker.reset_player_action()
+                # end of player_turn
+
+            except ValueError as error:
+                print(error)
+        
 
 #################################### End ####################################
