@@ -45,7 +45,7 @@ class Phase(Enum):
     PAYOUT = 4
 
 class Color(Enum):
-    BLACK = "\033[30m"
+    BLACK = "\x1b[36m"
     RED = "\033[91m"
 
 class Action(Enum):
