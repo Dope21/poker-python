@@ -232,8 +232,8 @@ class Player:
         self.chips -= chips
 
     def display_bet(self) -> None:
-        print("Your current bet is", self.current_bet)
-        print(f"You have {self.chips} chips left")
+        print("💲 Your current bet is", self.current_bet)
+        print(f"💵 You have {self.chips} chips left")
 
 class Poker:
     def __init__(self, player) -> None:
@@ -278,12 +278,12 @@ class Poker:
 
     def display_community_cards(self) -> None:
         if len(self.community_card):
-            print("Community Cards: ", end=" ")
+            print("🂠 Community Cards: ", end=" ")
             for c in self.community_card:
                 print(c, end=", ")
             print()
         else:
-            print("Community Cards: None")
+            print("🂠 Community Cards: None")
 
     def change_phase(self) -> bool:
         if self.first_player.last_action != Action.CHECK: return False
@@ -320,9 +320,9 @@ class Poker:
                 if winner.hand.high_card_value < comparer.hand.high_card_value: 
                     winner = comparer
                 elif winner.hand.high_card_value == comparer.hand.high_card_value:
-                    print("!! Both Players are equal !!")
+                    print("!! 🏳️ Both Players are equal 🏳️ !!")
                     return
-        print(f"!! Winner is Player {winner.id} !!")
+        print(f"!! Winner is Player \033[93mPlayer {winner.id}\033[0m 🏆 !!")
 
     def payout(self) -> None:
         player = self.first_player
@@ -382,15 +382,19 @@ while main:
                 player = poker.first_player
                 if player is None: raise ValueError("First player is None!")
                 while player_turn:
+                    if player is None: raise ValueError("Player is None!")
                     os.system('clear')
                     print(f"Phase: {poker.current_phase.name}")
-                    print("Minimum betting chips:", min_chips)
-                    print("Chips in the pot", poker.pot)
+                    print("💰 Minimum betting chips:", min_chips)
+                    print("🍯 Chips in the pot", poker.pot)
                     poker.display_community_cards()
-                    if player is None: raise ValueError("Player is None!")
-                    print(f"================ Player {player.id} turn ================")
-                    player.display_bet()
 
+                    print()
+                    print(f"Turn: \033[93mPlayer {player.id}\033[0m")
+                    player.display_bet()
+                    print()
+
+                    print("🖐️ Hand Information")
                     print("Your Cards: ", end="")
                     player.hand.display_hand()
 
@@ -460,8 +464,8 @@ while main:
                                         print(".")
                                         print(".")
                                         print(".")
-                                        print("Minimum betting chips:", min_chips)
-                                        print("Chips in the pot", poker.pot)
+                                        print("💰 Minimum betting chips:", min_chips)
+                                        print("🍯 Chips in the pot", poker.pot)
                                         player.display_bet()
                                         input("Enter to continue...")
                                     except ValueError as error:
@@ -471,8 +475,8 @@ while main:
                                 os.system('clear')
                                 player.last_action = Action.FOLD
                                 if player.next_player is None: raise ValueError("player is None")
-                                print(f"Player {player.id} has Fold")
-                                print(f"!! Winner is player {player.next_player.id} !!")
+                                print(f"🏳️ Player {player.id} has Fold")
+                                print(f"!! Winner is player \033[93mPlayer {player.next_player.id}\033[0m 🏆 !!")
                                 player_turn = False
                                 phase_start = False
                                 game_start = False
