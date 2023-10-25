@@ -407,6 +407,7 @@ while main:
                     select_action = True
                     while select_action:
                         try:
+                            print()
                             action = input("Type the first letter to select your action: [C]heck, [B]et, [F]old ")
                             if action.lower() not in ["c", "b", "f"]: raise ValueError("Please type only the first letter")
 
